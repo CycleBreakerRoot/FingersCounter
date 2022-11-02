@@ -1,6 +1,7 @@
 import mediapipe as mp
 import cv2 as cv
 import time
+import math
 
 ###################
 ###################
@@ -40,6 +41,16 @@ class HandsDetector():
             for id , lm in enumerate(myHand.landmark):
                 LmList.append([id , lm.x , lm.y])
         return LmList
+    
+    
+    def FindDistance(self , mylist , n , m):
+        if len(mylist) != 0:
+            x_n , y_n = mylist[n][1] , mylist[n][2]
+            x_m , y_m = mylist[m][1] , mylist[m][2]
+            
+            return math.sqrt((x_n - x_m) ** 2 + (y_n - y_m) ** 2)
+        return 0
+    
                 
     
 
@@ -62,7 +73,8 @@ def main():
         cv.putText(img , str(int(fps)) , (10 , 70) ,  cv.FONT_HERSHEY_PLAIN,3,(255,0,255) , 3)
         
         detector.FindHands(img) 
-        detector.FindPosition(img , draw= False)
+        l = detector.FindPosition(img , draw= False)
+        print(detector.FindDistance(l , 4, 8))
         
         cv.imshow('s' , img)
         if cv.waitKey(1) & 0xFF == ord('q'):
