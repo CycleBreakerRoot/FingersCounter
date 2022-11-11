@@ -1,12 +1,14 @@
+# import needed utilities
+
 import mediapipe as mp
 import cv2 as cv
 import time
 import math
 
-###################
-###################
+# defining the main working class
 class HandsDetector():
     
+    ############################
     def __init__(self , mode = False , MaxHands = 2 , DetectionCon = 0.5 , TrackCon = 0.5):
     
         self.mode = mode
@@ -19,7 +21,7 @@ class HandsDetector():
         self.hands = self.mpHands.Hands(self.mode ,self.MaxHands,1,self.DetectionCon ,self.TrackCon )
         self.mpDraw = mp.solutions.mediapipe.python.solutions.drawing_utils
         
-    
+    # This function takes in an image , converts it to RGB , finds the its landmarks and then draws them
     def FindHands(self , img , draw = True):
 
 
@@ -30,9 +32,10 @@ class HandsDetector():
             for handLms in self.res.multi_hand_landmarks:
                 if draw:
                     self.mpDraw.draw_landmarks(img,handLms,self.mpHands.HAND_CONNECTIONS)
+
                     
-    
-    def FindPosition(self, img , HandNo = 0 , draw = True):
+    # This function takes in an image , finds its landmarks and then returns them in a list
+    def FindPosition(self, img , HandNo = 0 , draw = False):
         
         LmList = []
         
@@ -41,8 +44,10 @@ class HandsDetector():
             for id , lm in enumerate(myHand.landmark):
                 LmList.append([id , lm.x , lm.y])
         return LmList
-    
-    
+                
+
+
+    # This function finds and returns the distance between tow points (landmarks) on the given space
     def FindDistance(self , mylist , n , m):
         if len(mylist) != 0:
             x_n , y_n = mylist[n][1] , mylist[n][2]
@@ -51,11 +56,9 @@ class HandsDetector():
             return math.sqrt((x_n - x_m) ** 2 + (y_n - y_m) ** 2)
         return 0
     
-                
-    
 
-
-
+################################################################
+######################  main ###################################
 def main():
     print('hello')   
     detector = HandsDetector()
@@ -73,12 +76,10 @@ def main():
         cv.putText(img , str(int(fps)) , (10 , 70) ,  cv.FONT_HERSHEY_PLAIN,3,(255,0,255) , 3)
         
         detector.FindHands(img) 
-        l = detector.FindPosition(img , draw= False)
-        print(detector.FindDistance(l , 4, 8))
+        detector.FindPosition(img)
         
         cv.imshow('s' , img)
-        if cv.waitKey(1) & 0xFF == ord('q'):
-            break    
+        cv.waitKey(1)
 
 
 
